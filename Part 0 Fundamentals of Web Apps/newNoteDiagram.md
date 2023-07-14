@@ -6,9 +6,6 @@ sequenceDiagram
     participant server
 
 	browser->>server: PUSH https://studies.cs.helsinki.fi/exampleapp/new_note
-    activate server
-    server-->>browser: note
-    deactivate server
 
 	Note left of server: The server appends the new note to the existing list of notes
 
