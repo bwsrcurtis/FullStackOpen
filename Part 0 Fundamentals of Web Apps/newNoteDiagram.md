@@ -10,7 +10,7 @@ sequenceDiagram
     server-->>browser: note
     deactivate server
 
-	Note right of browser: The server appends the new note to the existing list of notes
+	Note left of server: The server appends the new note to the existing list of notes
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
