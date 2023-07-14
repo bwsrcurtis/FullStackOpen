@@ -5,6 +5,13 @@ sequenceDiagram
     participant browser
     participant server
 
+	browser->>server: PUSH https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    server-->>browser: note
+    deactivate server
+
+	Note right of browser: The server appends the new note to the existing list of notes
+
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
     server-->>browser: HTML document
