@@ -30,44 +30,53 @@ const App = () => {
         const info = { name: newName, number: newNumber };
         const index = persons.findIndex(x => x.name === newName)
         personService.update(persons[index].id, info)
+          .then(response => {
+            const personsCopy = [...persons]
+            personsCopy[index].number = newNumber
+            setPersons(personsCopy)
+            setSuccessMessage(`Updated ${newName}`)
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 5000)
+          })
           .catch(error => {
-            setErrorMessage(`${persons[index].name} has already been removed from the server`)
+            setErrorMessage(`Number must be 8 digits or more separated by two '-'`)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
           })
-        const personsCopy = [...persons]
-        personsCopy[index].number = newNumber
-        setPersons(personsCopy)
-        setSuccessMessage(`Updated ${newName}`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+
+
         setNewName('')
         setNewNumber('')
       }
     }
     else {
       const info = { name: newName, number: newNumber };
-      setPersons(persons.concat(info))
       personService.create(info)
         .then(response => {
           setPersons(persons.concat(response.data))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(`Added ${newName}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
           console.log(response)
         })
-      setSuccessMessage(`Added ${newName}`)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
+        .catch(error => {
+          console.log(error)
+          setErrorMessage("Not a valid phone number")
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
       setNewName('')
       setNewNumber('')
     }
   }
 
   const deleteEntry = (person) => {
-    console.log(person.id)
     if (window.confirm("Are you sure you want to delete?")) {
       personService.deleteEntry(person)
         .catch(error => {
@@ -77,7 +86,6 @@ const App = () => {
           }, 5000)
           setPersons(persons.filter(e => e.id !== person.id))
         })
-      console.log(person.id)
       const updatedPersons = persons.filter(e =>
         e.id !== person.id)
       setPersons(updatedPersons)
@@ -92,7 +100,6 @@ const App = () => {
   }
 
   const filteredPersons = persons.filter(e => {
-    console.log(typeof persons)
     return (
       e.name.toLowerCase().includes(filterName.toLowerCase())
       ||
