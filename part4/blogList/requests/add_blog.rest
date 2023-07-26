@@ -2,8 +2,8 @@ POST http://localhost:3001/api/blogs
 content-type: application/json
 
 { 
-  "title": "This is my Blog.",
-  "author": "Albert Einstein",
-  "url": "https://einstein.com",
-  "likes": 55
+  "title": "Here is a blog about space.",
+  "author": "Stephen Hawking",
+  "url": "https://hawking.com",
+  "likes": 69
 }
