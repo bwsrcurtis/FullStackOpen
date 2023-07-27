@@ -122,22 +122,19 @@ test('a valid blog with no name or url responds with status code 400', async () 
 		.send(newBlog)
 		.expect(400)
 })
-// test('blog without content is not added', async () => {
-// 	const newBlog = {
-// 		title: 'new blog'
-// 	}
 
-// 	await api
-// 		.post('/api/blogs')
-// 		.send(newBlog)
-// 		.expect(400)
+test('update a blog', async() => {
+	const blogsInDb = await helper.blogsInDb()
+	const blogToUpdate = blogsInDb[0]
+	blogToUpdate.likes = 3
+	await api
+		.put(`/api/blogs/${blogToUpdate.id}`)
+		.send(blogToUpdate)
 
-// 	const blogsAtEnd = await helper.blogsInDb()
-
-// 	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-// })
-
-
+	const updatedBlogs = await helper.blogsInDb()
+	const likes = updatedBlogs[0].likes
+	expect(likes).toBe(3)
+})
 
 afterAll(async () => {
 	await mongoose.connection.close()
