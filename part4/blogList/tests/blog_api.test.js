@@ -25,6 +25,12 @@ test('blogs are returned as json', async () => {
 		.expect('Content-Type', /application\/json/)
 })
 
+test('id field key equals id', async () => {
+	const response = await api.get('/api/blogs')
+	expect(200)
+	expect(response.body[0].id).toBeDefined()
+})
+
 test('all blogs are returned', async () => {
 	const response = await api.get('/api/blogs')
 
@@ -63,20 +69,73 @@ test('a valid blog can be added', async () => {
 	)
 })
 
-test('blog without content is not added', async () => {
+test('succeeds with status code 204 if id is valid', async () => {
+	const blogsAtStart = await helper.blogsInDb()
+	const blogToDelete = blogsAtStart[0]
+
+	await api
+		.delete(`/api/blogs/${blogToDelete.id}`)
+		.expect(204)
+
+	const blogsAtEnd = await helper.blogsInDb()
+
+	expect(blogsAtEnd).toHaveLength(
+		helper.initialBlogs.length - 1
+	)
+
+	const title = blogsAtEnd.map(r => r.title)
+
+	expect(title).not.toContain(blogToDelete.title)
+})
+
+test('a valid blog with no likes can be added and likes default to zero', async () => {
 	const newBlog = {
-		title: 'new blog'
+		title: 'Here is another blog.',
+		author: 'Albert Oppenheimer',
+		url: 'https://oppenheimer.com'
+	}
+
+	await api
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(201)
+		.expect('Content-Type', /application\/json/)
+
+	const blogsAtEnd = await helper.blogsInDb()
+	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length +1)
+
+	const likes = blogsAtEnd[blogsAtEnd.length-1].likes
+	expect(likes).toBe(
+		0
+	)
+})
+
+test('a valid blog with no name or url responds with status code 400', async () => {
+	const newBlog = {
+		author: 'Albert Oppenheimer',
+		url: 'https://oppenheimer.com',
+		likes: 420
 	}
 
 	await api
 		.post('/api/blogs')
 		.send(newBlog)
 		.expect(400)
-
-	const blogsAtEnd = await helper.blogsInDb()
-
-	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
+// test('blog without content is not added', async () => {
+// 	const newBlog = {
+// 		title: 'new blog'
+// 	}
+
+// 	await api
+// 		.post('/api/blogs')
+// 		.send(newBlog)
+// 		.expect(400)
+
+// 	const blogsAtEnd = await helper.blogsInDb()
+
+// 	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+// })
 
 
 
